@@ -1,23 +1,37 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: 'Bundle Stats PR Commenter'
+description:
+  'Analyze webpack bundle stats and post size reports to pull requests'
+author: 'yk-lab'
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: heart
-  color: red
+  icon: 'package'
+  color: 'blue'
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
-    required: true
-    default: '1000'
+  stats-path:
+    description: 'Path to webpack-stats.json file'
+    required: false
+    default: 'webpack-stats.json'
+  bundle-size-threshold:
+    description: 'Individual file size threshold in bytes'
+    required: false
+    default: '2097152' # 2MB
+  total-size-threshold:
+    description: 'Total bundle size threshold in bytes'
+    required: false
+    default: '10485760' # 10MB
+  fail-on-threshold-exceed:
+    description: 'Whether to fail the CI when thresholds are exceeded'
+    required: false
+    default: 'true'
 
-# Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
+  comment-body:
+    description: 'The markdown content of the posted/updated comment'
+  exceeded:
+    description: 'Boolean string indicating if any thresholds were exceeded'
+  badge-svg:
+    description: 'SVG content for the bundle size badge'
 
 runs:
   using: node20

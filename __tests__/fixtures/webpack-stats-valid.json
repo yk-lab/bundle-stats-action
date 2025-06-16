@@ -1,0 +1,70 @@
+{
+  "version": "5.89.0",
+  "hash": "a1b2c3d4e5f6",
+  "time": 12345,
+  "builtAt": 1234567890123,
+  "publicPath": "/",
+  "outputPath": "/dist",
+  "assets": [
+    {
+      "name": "main.js",
+      "size": 1548288,
+      "chunks": ["main"],
+      "chunkNames": ["main"],
+      "emitted": true,
+      "isOverSizeLimit": false
+    },
+    {
+      "name": "vendor.js",
+      "size": 2621440,
+      "chunks": ["vendor"],
+      "chunkNames": ["vendor"],
+      "emitted": true,
+      "isOverSizeLimit": true
+    },
+    {
+      "name": "styles.css",
+      "size": 524288,
+      "chunks": ["main"],
+      "chunkNames": ["main"],
+      "emitted": true,
+      "isOverSizeLimit": false
+    },
+    {
+      "name": "main.js.map",
+      "size": 3145728,
+      "chunks": ["main"],
+      "chunkNames": ["main"],
+      "emitted": true,
+      "isOverSizeLimit": false
+    },
+    {
+      "name": "vendor.js.LICENSE.txt",
+      "size": 1024,
+      "chunks": ["vendor"],
+      "chunkNames": ["vendor"],
+      "emitted": true,
+      "isOverSizeLimit": false
+    }
+  ],
+  "chunks": [
+    {
+      "id": "main",
+      "names": ["main"],
+      "size": 2072576,
+      "files": ["main.js", "styles.css"],
+      "modules": []
+    },
+    {
+      "id": "vendor",
+      "names": ["vendor"],
+      "size": 2621440,
+      "files": ["vendor.js"],
+      "modules": []
+    }
+  ],
+  "assetsByChunkName": {
+    "main": ["main.js", "styles.css"],
+    "vendor": "vendor.js"
+  }
+}

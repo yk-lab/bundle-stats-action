@@ -25,16 +25,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
       - name: Setup Node.js
         id: setup-node
         uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
-          cache: npm
+          cache: pnpm
 
       - name: Install Dependencies
         id: install
-        run: npm ci
+        run: pnpm install
 
       - name: Lint Codebase
         id: super-linter
