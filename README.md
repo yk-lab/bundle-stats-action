@@ -1,37 +1,53 @@
-# Create a GitHub Action Using TypeScript
+# Bundle Stats Action
 
-[![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
-[![Check dist/](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/typescript-action/actions/workflows/codeql-analysis.yml)
+[![GitHub Super-Linter](https://github.com/yk-lab/bundle-stats-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
+![CI](https://github.com/yk-lab/bundle-stats-action/actions/workflows/ci.yml/badge.svg)
+[![Check dist/](https://github.com/yk-lab/bundle-stats-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/yk-lab/bundle-stats-action/actions/workflows/check-dist.yml)
+[![CodeQL](https://github.com/yk-lab/bundle-stats-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/yk-lab/bundle-stats-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-Use this template to bootstrap the creation of a TypeScript action. :rocket:
+English | [日本語](./README.ja.md)
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
+A GitHub Action that analyzes webpack bundle stats and posts size reports to
+pull requests. Perfect for small to medium projects that need cost-effective
+bundle size monitoring without external services.
 
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
+## 📚 Documentation
 
-## Create Your Own Action
+- [Architecture Overview](./docs/architecture.md) - System design and module
+  structure
+- [Data Structures](./docs/data-structures.md) - Input/output formats and
+  internal data models
+- [API Specifications](./docs/api-specifications.md) - GitHub API integration
+  details
+- [Error Handling](./docs/error-handling.md) - Error types and recovery
+  strategies
+- [Test Plan](./docs/test-plan.md) - Testing strategy and coverage goals
+- [Implementation Guide](./docs/implementation-guide.md) - Coding standards and
+  best practices
+- [Development Setup](./docs/development-setup.md) - Local development
+  environment guide
+- [Deployment Guide](./docs/deployment-guide.md) - Release process and
+  versioning
 
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
+## 🚀 Features
 
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
+- 📊 Analyzes webpack-stats.json and reports bundle sizes
+- 💬 Posts/updates PR comments with size information
+- 🚨 Fails CI when size thresholds are exceeded
+- 📈 Tracks both individual file and total bundle sizes
+- 🎯 Configurable size thresholds
+- 📦 Collapsible file lists for better readability
+- 🏷️ SVG badge generation for status
+- ⚡ Fast and lightweight
 
-> [!IMPORTANT]
->
-> Make sure to remove or update the [`CODEOWNERS`](./CODEOWNERS) file! For
-> details on how to use this file, see
-> [About code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners).
+## 📋 Requirements
 
-## Initial Setup
+- Node.js 20.19.x
+- webpack configured to output stats JSON
+- GitHub token with PR write permissions
+
+## 🔧 Setup
 
 After you've cloned the repository to your local machine or codespace, you'll
 need to perform some initial setup steps before you can develop your action.
@@ -39,8 +55,8 @@ need to perform some initial setup steps before you can develop your action.
 > [!NOTE]
 >
 > You'll need to have a reasonably modern version of
-> [Node.js](https://nodejs.org) handy (20.x or later should work!). If you are
-> using a version manager like [`nodenv`](https://github.com/nodenv/nodenv) or
+> [Node.js](https://nodejs.org) handy (20.19.x). If you are using a version
+> manager like [`nodenv`](https://github.com/nodenv/nodenv) or
 > [`fnm`](https://github.com/Schniz/fnm), this template has a `.node-version`
 > file at the root of the repository that can be used to automatically switch to
 > the correct version when you `cd` into the repository. Additionally, this
@@ -195,7 +211,7 @@ steps:
     id: test-action
     uses: ./
     with:
-      milliseconds: 1000
+      GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
 
   - name: Print Output
     id: output
@@ -203,35 +219,61 @@ steps:
 ```
 
 For example workflow runs, check out the
-[Actions tab](https://github.com/actions/typescript-action/actions)! :rocket:
+[Actions tab](https://github.com/yk-lab/bundle-stats-action/actions)! :rocket:
 
-## Usage
+## 📖 Usage
 
-After testing, you can create version tag(s) that developers can use to
-reference different stable versions of your action. For more information, see
-[Versioning](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-in the GitHub Actions toolkit.
-
-To include the action in a workflow in another repository, you can use the
-`uses` syntax with the `@` symbol to reference a specific branch, tag, or commit
-hash.
+### Basic Configuration
 
 ```yaml
-steps:
-  - name: Checkout
-    id: checkout
-    uses: actions/checkout@v4
+name: Bundle Size Check
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
 
-  - name: Test Local Action
-    id: test-action
-    uses: actions/typescript-action@v1 # Commit with the `v1` tag
-    with:
-      milliseconds: 1000
+jobs:
+  check-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  - name: Print Output
-    id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build project
+        run: |
+          npm install
+          npm run build
+
+      - name: Check Bundle Size
+        uses: yk-lab/bundle-stats-action@v1
+        with:
+          stats-path: 'dist/webpack-stats.json'
+          bundle-size-threshold: 2097152 # 2MB per file
+          total-size-threshold: 10485760 # 10MB total
+          fail-on-threshold-exceed: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
+
+### Input Parameters
+
+| Name                       | Type    | Default              | Description                                             |
+| -------------------------- | ------- | -------------------- | ------------------------------------------------------- |
+| `stats-path`               | string  | `webpack-stats.json` | Path to webpack stats JSON file                         |
+| `bundle-size-threshold`    | number  | `2097152` (2MB)      | Individual file size threshold in bytes                 |
+| `total-size-threshold`     | number  | `10485760` (10MB)    | Total bundle size threshold in bytes                    |
+| `fail-on-threshold-exceed` | boolean | `true`               | Whether to fail the CI job when thresholds are exceeded |
+
+### Output Parameters
+
+| Name           | Type    | Description                                        |
+| -------------- | ------- | -------------------------------------------------- |
+| `comment-body` | string  | The Markdown content of the posted/updated comment |
+| `exceeded`     | boolean | Whether any threshold was exceeded                 |
+| `badge-svg`    | string  | SVG badge content for bundle size status           |
 
 ## Publishing a New Release
 
