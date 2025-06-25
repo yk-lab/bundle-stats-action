@@ -1,7 +1,7 @@
 {
   "name": "bundle-stats-action",
   "description": "GitHub Action to analyze webpack bundle stats and post PR comments",
-  "version": "0.0.0",
+  "version": "v0.1.0",
   "author": "yk-lab",
   "type": "module",
   "private": true,
